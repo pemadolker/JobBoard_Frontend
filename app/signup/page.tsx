@@ -11,9 +11,9 @@ const SignUpPage = () => {
   // Navigate to Employer or Seeker page
   const handleNavigation = (role: "employer" | "seeker") => {
     if (role === "employer") {
-      router.push("/employer-signup");
+      router.push("signup/employersignup");
     } else if (role === "seeker") {
-      router.push("/seeker-signup");
+      router.push("signup/seekersignup");
     }
   };
 
@@ -31,7 +31,7 @@ const SignUpPage = () => {
         <CardContent className="flex flex-col gap-4">
           {/* Employer Button */}
           <Button
-            className="bg-gradient-to-r from-blue-600 to-indigo-500 text-white hover:bg-blue-700"
+            className="bg-gradient-to-r from-blue-400 to-teal-300 text-white hover:from-teal-300 hover:to-blue-400 transform transition-transform hover:scale-105"
             size="lg"
             onClick={() => handleNavigation("employer")}
           >
@@ -40,7 +40,7 @@ const SignUpPage = () => {
 
           {/* Seeker Button */}
           <Button
-            className="bg-gradient-to-r from-blue-600 to-indigo-500 text-white hover:bg-indigo-700"
+            className="bg-gradient-to-r from-blue-400 to-teal-300 text-white hover:from-teal-300 hover:to-blue-400 transform transition-transform hover:scale-105"
             size="lg"
             onClick={() => handleNavigation("seeker")}
           >
