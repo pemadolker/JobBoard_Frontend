@@ -19,7 +19,7 @@ const EmployerSignupPage = () => {
     description: "",
     location: "",
   });
-
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -29,6 +29,27 @@ const EmployerSignupPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Password validation regex
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    // Validate password
+    if (!passwordRegex.test(formData.password)) {
+      setError(
+        "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+      );
+      return;
+    }
+
+    // Validate confirmPassword matches password
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    // Clear any previous error
+    setError("");
+
     console.log("Employer Signup Data:", formData);
     router.push("/dashboard"); // Redirect after successful sign up
   };
@@ -97,6 +118,9 @@ const EmployerSignupPage = () => {
                 className="w-full"
               />
             </div>
+
+            {/* Error Message */}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
 
             <div>
               <Label htmlFor="website">Website URL</Label>

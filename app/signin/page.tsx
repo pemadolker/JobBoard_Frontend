@@ -9,10 +9,24 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 const SignInPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Password validation regex
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+      setError(
+        "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+      );
+      return;
+    }
+
+    // Clear any previous error
+    setError("");
 
     // Handle the login logic
     console.log(email, password);
@@ -57,6 +71,9 @@ const SignInPage = () => {
                 autoComplete="new-password"
               />
             </div>
+
+            {/* Error Message */}
+            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
             {/* Submit Button */}
             <Button

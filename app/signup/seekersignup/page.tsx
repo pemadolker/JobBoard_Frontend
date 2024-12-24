@@ -16,12 +16,18 @@ const SeekerSignupPage = () => {
     confirmPassword: "",
     portfolioURL: "",
     contactNumber: "",
-    resume: null as File | null, 
+    resume: null as File | null,
     location: "",
     skills: "",
   });
 
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
+
+  const validatePassword = (password: string) => {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, files } = e.target as HTMLInputElement & { files: FileList };
@@ -34,13 +40,27 @@ const SeekerSignupPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validatePassword(formData.password)) {
+      setErrorMessage(
+        "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one digit, and one special character."
+      );
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setErrorMessage("Passwords do not match.");
+      return;
+    }
+
+    setErrorMessage(""); // Clear any existing errors
     console.log("Seeker Signup Data:", formData);
     router.push("/dashboard"); // Redirect after successful sign-up
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-400 to-teal-300 px-4">
-      <Card className="w-full max-w-md shadow-lg rounded-lg"> {/* Ensure consistent card size */}
+      <Card className="w-full max-w-md shadow-lg rounded-lg">
         <CardHeader>
           <CardTitle className="text-xl font-bold text-center text-gray-800">
             Signup as Job Seeker
@@ -102,6 +122,10 @@ const SeekerSignupPage = () => {
                 className="w-full"
               />
             </div>
+
+            {errorMessage && (
+              <p className="text-red-500 text-sm text-center">{errorMessage}</p>
+            )}
 
             <div>
               <Label htmlFor="portfolioURL">Portfolio URL</Label>
