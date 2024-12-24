@@ -10,6 +10,7 @@ const SignInPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // Add loading state
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,12 +26,29 @@ const SignInPage = () => {
       return;
     }
 
-    // Clear any previous error
-    setError("");
+    setError(""); // Clear any previous error
+    setLoading(true); // Show loading indicator
 
-    // Handle the login logic
-    console.log(email, password);
-    router.push("/dashboard");
+    try {
+      const response = await fetch("/api/auth/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json(); // Parse the error message from the server
+        setError(errorData.message || "Something went wrong. Please try again.");
+        return;
+      }
+
+      // If successful, redirect the user
+      router.push("/dashboard");
+    } catch (err) {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false); // Hide loading indicator
+    }
   };
 
   return (
@@ -80,8 +98,9 @@ const SignInPage = () => {
               type="submit"
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-500 text-white hover:from-blue-700 hover:to-indigo-600 transition-all"
               size="lg"
+              disabled={loading} // Disable button when loading
             >
-              Sign In
+              {loading ? "Signing In..." : "Sign In"}
             </Button>
 
             {/* Google Sign-In Button */}
