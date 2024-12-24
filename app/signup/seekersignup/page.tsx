@@ -16,7 +16,7 @@ const SeekerSignupPage = () => {
     confirmPassword: "",
     portfolioURL: "",
     contactNumber: "",
-    resume: null,
+    resume: null as File | null, 
     location: "",
     skills: "",
   });

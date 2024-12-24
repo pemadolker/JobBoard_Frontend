@@ -10,8 +10,8 @@ const DefaultPage = () => {
           <Link href="/" className="text-white hover:text-blue-300">
             Home
           </Link>
-          <Link href="/about" className="text-white hover:text-blue-300">
-            About
+          <Link href="home/aboutus" className="text-white hover:text-blue-300">
+            About us
           </Link>
           <a href="#" className="text-white hover:text-blue-300">
             Companies
