@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { FiArrowLeft } from "react-icons/fi"; // Importing arrow icon
+import { FiArrowLeft } from "react-icons/fi";
 
 const SeekerSignupPage = () => {
   const [formData, setFormData] = useState({
@@ -56,7 +56,7 @@ const SeekerSignupPage = () => {
 
     setErrorMessage(""); // Clear any existing errors
     console.log("Seeker Signup Data:", formData);
-    router.push("/dashboard"); // Redirect after successful sign-up
+    router.push("/dashboard/seekerDashboard"); // Navigate to the dashboard
   };
 
   const handleGoBack = () => {
@@ -65,7 +65,7 @@ const SeekerSignupPage = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-400 to-teal-300 px-4">
-      {/* Back Arrow Button Outside of the Card */}
+      {/* Back Arrow Button */}
       <div
         onClick={handleGoBack}
         className="cursor-pointer text-gray-500 text-sm flex items-center space-x-2 absolute top-5 left-4"
