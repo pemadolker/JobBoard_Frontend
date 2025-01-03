@@ -163,9 +163,9 @@ export default function SeekerDashboard() {
                       >
                         <td className="p-4 text-gray-700">{index + 1}</td>
                         <td className="p-4 text-gray-700">Frontend Developer</td>
-                        <td className="p-4 text-gray-700">TechCorp</td>
+                        <td className="p-4 text-gray-700">DHI</td>
                         <td className="p-4 text-gray-700">Bachelor's Degree</td>
-                        <td className="p-4 text-gray-700">Morning</td>
+                        <td className="p-4 text-gray-700">3</td>
                         <td className="p-4 text-gray-700">Software Engineer</td>
                         <td className="p-4 text-gray-700">2024-01-15</td>
                         <td className="p-4 text-gray-700">2023-12-20</td>
