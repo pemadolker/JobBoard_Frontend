@@ -21,6 +21,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/**/*.tsx"], // Add the path to the missing file
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/**/*.tsx", "app/employerdashboard/page.tsx"], // Add the path to the missing file
   "exclude": ["node_modules"]
 }

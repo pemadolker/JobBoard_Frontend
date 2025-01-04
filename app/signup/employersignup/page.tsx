@@ -52,7 +52,7 @@ const EmployerSignupPage = () => {
     setError("");
 
     console.log("Employer Signup Data:", formData);
-    router.push("/dashboard"); // Redirect after successful sign up
+    router.push("/employer"); // Redirect after successful sign up
   };
 
   const handleGoBack = () => {
