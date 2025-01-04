@@ -11,9 +11,9 @@ const SignUpPage = () => {
   // Navigate to Employer or Seeker page
   const handleNavigation = (role: "employer" | "seeker") => {
     if (role === "employer") {
-      router.push("signup/employersignup");
+      router.push("signup/employer");
     } else if (role === "seeker") {
-      router.push("signup/seekersignup");
+      router.push("signup/seeker");
     }
   };
 
