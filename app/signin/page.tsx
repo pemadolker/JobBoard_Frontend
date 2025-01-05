@@ -12,44 +12,45 @@ const SignInPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); // Add loading state
   const router = useRouter();
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     // Password validation regex
     const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
+  
     if (!passwordRegex.test(password)) {
       setError(
-        "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+        "Password doesnot match"
       );
       return;
     }
-
+  
     setError(""); // Clear any previous error
     setLoading(true); // Show loading indicator
-
+  
     try {
-      const response = await fetch("signin", {
+      const response = await fetch("http://localhost:8000/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
+  
+      const responseData = await response.json();
+  
       if (!response.ok) {
-        const errorData = await response.json(); // Parse the error message from the server
-        setError(errorData.message || "Something went wrong. Please try again.");
+        setError(responseData.error || "Something went wrong. Please try again.");
         return;
       }
-
+  
       // If successful, redirect the user
-      router.push("/employer ");
+      router.push("/employer");
     } catch (err) {
       setError("Network error. Please check your connection and try again.");
     } finally {
       setLoading(false); // Hide loading indicator
     }
   };
+  
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-400 to-teal-300">
