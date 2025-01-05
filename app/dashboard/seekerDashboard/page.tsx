@@ -10,6 +10,7 @@ const SeekerDashboard = () => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]); // For Latest Job Listings
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]); // For search results
+  const [savedJobs, setSavedJobs] = useState<Set<number>>(new Set()); // Track saved jobs
   const router = useRouter();
 
   interface Job {
@@ -62,6 +63,18 @@ const SeekerDashboard = () => {
       job.type.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredJobs(filtered);
+  };
+
+  const toggleSaveJob = (index: number) => {
+    setSavedJobs((prev) => {
+      const newSavedJobs = new Set(prev);
+      if (newSavedJobs.has(index)) {
+        newSavedJobs.delete(index);
+      } else {
+        newSavedJobs.add(index);
+      }
+      return newSavedJobs;
+    });
   };
 
   useEffect(() => {
@@ -196,15 +209,28 @@ const SeekerDashboard = () => {
           </p>
           <div className="mt-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
             {jobs.slice(0, 8).map((job, index) => (
-              <button
+              <div
                 key={index}
-                className="bg-white p-6 rounded-xl shadow-2xl hover:shadow-3xl transition duration-300 cursor-pointer"
+                className="bg-white p-6 rounded-xl shadow-2xl hover:shadow-3xl transition duration-300 cursor-pointer relative"
                 onClick={() => setSelectedJob(job)}
               >
                 <h4 className="text-lg font-bold text-blue-500">{job.title}</h4>
                 <p className="text-gray-600 mt-2">{job.company}</p>
                 <p className="text-gray-500 mt-1 text-sm">{job.type}</p>
-              </button>
+                <button
+                  className={`absolute top-4 right-4 px-2 py-1 text-sm rounded-full ${
+                    savedJobs.has(index)
+                      ? "bg-green-500 text-white"
+                      : "bg-gray-200 text-gray-600"
+                  } hover:bg-green-600 transition`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleSaveJob(index);
+                  }}
+                >
+                  {savedJobs.has(index) ? "Saved" : "Save"}
+                </button>
+              </div>
             ))}
           </div>
         </div>
@@ -231,6 +257,12 @@ const SeekerDashboard = () => {
               vestibulum vestibulum. Cras venenatis euismod malesuada. Duis nec eros eget est
               placerat fermentum. Phasellus vel urna sed risus gravida sollicitudin.
             </p>
+            <button
+              className="mt-8 px-6 py-3 bg-blue-500 text-white font-bold rounded-lg shadow-md hover:bg-blue-600 transition duration-200"
+              onClick={() => alert("Application submitted successfully!")}
+            >
+              Apply Now
+            </button>
           </div>
         </div>
       )}
