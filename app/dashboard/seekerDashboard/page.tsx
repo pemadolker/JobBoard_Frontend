@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // Use the correct import for Next 13 App Router
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const SeekerDashboard = () => {
@@ -10,7 +10,7 @@ const SeekerDashboard = () => {
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]); // For Latest Job Listings
   const [filteredJobs, setFilteredJobs] = useState<Job[]>([]); // For search results
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
 
   interface Job {
     title: string;
@@ -62,12 +62,6 @@ const SeekerDashboard = () => {
       job.type.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredJobs(filtered);
-
-    if (filtered.length > 0) {
-      setSelectedJob(filtered[0]);
-    } else {
-      setSelectedJob(null);
-    }
   };
 
   useEffect(() => {
@@ -77,6 +71,10 @@ const SeekerDashboard = () => {
   useEffect(() => {
     handleSearch();
   }, [searchQuery]);
+
+  const closeModal = () => {
+    setSelectedJob(null);
+  };
 
   return (
     <div className="font-sans bg-gray-100 min-h-screen">
@@ -108,15 +106,11 @@ const SeekerDashboard = () => {
 
           {isDropdownOpen && (
             <div className="absolute right-0 mt-2 bg-white text-gray-800 rounded-lg shadow-lg w-48">
-              {/* Updated to use the nested route */}
               <Link
                 href="/dashboard/seekerDashboard/profile"
                 className="block px-4 py-2 hover:bg-gray-100"
               >
                 View Profile
-              </Link>
-              <Link href="/settings" className="block px-4 py-2 hover:bg-gray-100">
-                Settings
               </Link>
               <button
                 onClick={handleLogout}
@@ -150,11 +144,23 @@ const SeekerDashboard = () => {
               Search
             </button>
           </div>
-          {searchQuery.trim() !== "" && selectedJob && (
-            <div className="mt-8 text-lg text-white flex justify-center gap-8">
-              <span className="font-bold">{selectedJob.title}</span>
-              <span>{selectedJob.company}</span>
-              <span>{selectedJob.type}</span>
+          {searchQuery.trim() !== "" && (
+            <div className="mt-8 text-lg text-white">
+              {filteredJobs.length > 0 ? (
+                <ul className="space-y-4">
+                  {filteredJobs.map((job, index) => (
+                    <li
+                      key={index}
+                      className="cursor-pointer hover:underline"
+                      onClick={() => setSelectedJob(job)}
+                    >
+                      {job.title} - {job.company} ({job.type})
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No jobs found matching your search criteria.</p>
+              )}
             </div>
           )}
         </div>
@@ -174,26 +180,60 @@ const SeekerDashboard = () => {
 
       <section className="bg-gradient-to-r from-teal-400 to-blue-500 py-16 text-center text-white">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-white text-center">
-            Latest Job Listings
-          </h2>
-          <p className="mt-4 text-lg text-center text-white">
+          <div className="flex justify-between items-center">
+            <h2 className="text-4xl font-bold text-white mx-auto">
+              Latest Job Listings
+            </h2>
+            <Link
+              href="/dashboard/seekerDashboard/jobs"
+              className="text-sm bg-white text-blue-500 px-3 py-1 rounded-lg shadow-md hover:bg-gray-100 transition duration-200"
+            >
+              View All
+            </Link>
+          </div>
+          <p className="mt-4 text-lg text-white">
             Browse the latest job opportunities tailored for you.
           </p>
           <div className="mt-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
-            {jobs.map((job, index) => (
-              <div
+            {jobs.slice(0, 8).map((job, index) => (
+              <button
                 key={index}
-                className="bg-white p-6 rounded-xl shadow-2xl hover:shadow-3xl transition duration-300"
+                className="bg-white p-6 rounded-xl shadow-2xl hover:shadow-3xl transition duration-300 cursor-pointer"
+                onClick={() => setSelectedJob(job)}
               >
                 <h4 className="text-lg font-bold text-blue-500">{job.title}</h4>
                 <p className="text-gray-600 mt-2">{job.company}</p>
                 <p className="text-gray-500 mt-1 text-sm">{job.type}</p>
-              </div>
+              </button>
             ))}
           </div>
         </div>
       </section>
+
+      {selectedJob && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-12 max-w-4xl w-full relative">
+            <button
+              className="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-3xl"
+              onClick={closeModal}
+            >
+              &times;
+            </button>
+            <h2 className="text-4xl font-bold text-blue-500">{selectedJob.title}</h2>
+            <p className="text-gray-600 mt-8 text-xl">
+              <strong>Company:</strong> {selectedJob.company}
+            </p>
+            <p className="text-gray-600 mt-6 text-xl">
+              <strong>Type:</strong> {selectedJob.type}
+            </p>
+            <p className="text-gray-600 mt-8 text-lg leading-relaxed">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae
+              vestibulum vestibulum. Cras venenatis euismod malesuada. Duis nec eros eget est
+              placerat fermentum. Phasellus vel urna sed risus gravida sollicitudin.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
