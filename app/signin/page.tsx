@@ -30,7 +30,7 @@ const SignInPage = () => {
     setLoading(true); // Show loading indicator
 
     try {
-      const response = await fetch("/api/auth/signin", {
+      const response = await fetch("signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -43,7 +43,7 @@ const SignInPage = () => {
       }
 
       // If successful, redirect the user
-      router.push("/dashboard");
+      router.push("/employer ");
     } catch (err) {
       setError("Network error. Please check your connection and try again.");
     } finally {

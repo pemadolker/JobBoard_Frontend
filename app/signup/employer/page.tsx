@@ -2,12 +2,18 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { FiArrowLeft } from "react-icons/fi"; // Importing arrow icon
+import { FiArrowLeft } from "react-icons/fi";
 
 const EmployerSignupPage = () => {
   const [formData, setFormData] = useState({
@@ -20,7 +26,7 @@ const EmployerSignupPage = () => {
     description: "",
     location: "",
   });
-  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -28,41 +34,70 @@ const EmployerSignupPage = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Password validation regex
     const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-    // Validate password
     if (!passwordRegex.test(formData.password)) {
-      setError(
-        "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character."
-      );
+      setSuccessMessage("");
       return;
     }
 
-    // Validate confirmPassword matches password
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match.");
+      setSuccessMessage("");
       return;
     }
 
-    // Clear any previous error
-    setError("");
+    setSuccessMessage("");  // Reset success message before trying to send request
 
-    console.log("Employer Signup Data:", formData);
-    router.push("/employer"); // Redirect after successful sign up
+    try {
+      const response = await fetch("http://localhost:8000/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          company_name: formData.companyName,
+          company_description: formData.description,
+          website_url: formData.website,
+          contact_number: formData.contactNumber,
+          location: formData.location,
+          role: "employer",
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setSuccessMessage("Something went wrong. Please try again later.");
+        return;
+      }
+
+      setSuccessMessage("Signup successful! A confirmation email has been sent. Please confirm your email to complete the process.");
+      setFormData({
+        companyName: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        website: "",
+        contactNumber: "",
+        description: "",
+        location: "",
+      });
+    } catch (err) {
+      console.error("Error during signup:", err);
+      setSuccessMessage("Something went wrong. Please try again later.");
+    }
   };
 
   const handleGoBack = () => {
-    // Navigate to the /signup page
     router.push("/signup");
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-400 to-teal-300 px-4">
-      {/* Back Arrow Button Outside of the Card */}
       <div
         onClick={handleGoBack}
         className="cursor-pointer text-gray-500 text-sm flex items-center space-x-2 absolute top-5 left-4"
@@ -134,9 +169,6 @@ const EmployerSignupPage = () => {
               />
             </div>
 
-            {/* Error Message */}
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-
             <div>
               <Label htmlFor="website">Website URL</Label>
               <Input
@@ -187,6 +219,8 @@ const EmployerSignupPage = () => {
                 className="w-full"
               />
             </div>
+
+            {successMessage && <p className="text-green-500 text-sm text-center">{successMessage}</p>}
 
             <Button
               type="submit"
