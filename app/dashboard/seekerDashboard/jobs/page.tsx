@@ -33,7 +33,7 @@ const JobsPage = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch("https://your-backend-api.com/jobs");
+        const response = await fetch("http://localhost:8000/dashboard/seekerdashboard/jobs");
 
         if (response.ok) {
           const data: Job[] = await response.json();
