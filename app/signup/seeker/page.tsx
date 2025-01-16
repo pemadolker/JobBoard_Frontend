@@ -2,12 +2,18 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { FiArrowLeft } from "react-icons/fi";
+import { FiArrowLeft, FiEye, FiEyeOff } from "react-icons/fi";
 
 const SeekerSignupPage = () => {
   const [formData, setFormData] = useState({
@@ -17,35 +23,32 @@ const SeekerSignupPage = () => {
     confirmPassword: "",
     portfolioURL: "",
     contactNumber: "",
-    resume: null as File | null,
     location: "",
     skills: "",
+    education: "",
+    workExperience: "",
   });
-
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const router = useRouter();
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
+
   const validatePassword = (password: string) => {
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     return passwordRegex.test(password);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, files } = e.target as HTMLInputElement & { files: FileList };
-    if (name === "resume" && files) {
-      setFormData({ ...formData, resume: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validatePassword(formData.password)) {
-      setErrorMessage(
-        "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one digit, and one special character."
-      );
+      setErrorMessage("Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one digit.");
       return;
     }
 
@@ -55,17 +58,55 @@ const SeekerSignupPage = () => {
     }
 
     setErrorMessage(""); // Clear any existing errors
-    console.log("Seeker Signup Data:", formData);
-    router.push("/dashboard/seekerDashboard"); // Navigate to the dashboard
-  };
 
+    try {
+      const response = await fetch("http://localhost:8000/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          name: formData.fullName,
+          portfolio_url: formData.portfolioURL,
+          contact_number: formData.contactNumber,
+          location: formData.location,
+          skills: formData.skills,
+          education: formData.education,
+          work_experience: formData.workExperience,
+          role: "job_seeker",
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setSuccessMessage("Something went wrong. Please try again later.");
+        return;
+      }
+
+      setSuccessMessage("Signup successful! A confirmation email has been sent. Please confirm your email to complete the process.");
+    } catch (err) {
+      console.error("Error during signup:", err);
+      setSuccessMessage("Something went wrong. Please try again later.");
+    }
+  };
   const handleGoBack = () => {
     router.push("/signup");
   };
 
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setConfirmPasswordVisible(!confirmPasswordVisible);
+  };
+
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-400 to-teal-300 px-4">
-      {/* Back Arrow Button */}
       <div
         onClick={handleGoBack}
         className="cursor-pointer text-gray-500 text-sm flex items-center space-x-2 absolute top-5 left-4"
@@ -84,7 +125,7 @@ const SeekerSignupPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
             <div>
               <Label htmlFor="fullName">Full Name</Label>
               <Input
@@ -113,33 +154,47 @@ const SeekerSignupPage = () => {
 
             <div>
               <Label htmlFor="password">Password</Label>
-              <Input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Create a password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full"
-              />
+              <div className="relative">
+                <Input
+                  type={passwordVisible ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  placeholder="Create a password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full"
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                >
+                  {passwordVisible ? <FiEyeOff /> : <FiEye />}
+                </button>
+              </div>
             </div>
 
             <div>
               <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                placeholder="Confirm your password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="w-full"
-              />
+              <div className="relative">
+                <Input
+                  type={confirmPasswordVisible ? "text" : "password"}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  placeholder="Confirm your password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={toggleConfirmPasswordVisibility}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                >
+                  {confirmPasswordVisible ? <FiEyeOff /> : <FiEye />}
+                </button>
+              </div>
             </div>
-
-            {errorMessage && (
-              <p className="text-red-500 text-sm text-center">{errorMessage}</p>
-            )}
 
             <div>
               <Label htmlFor="portfolioURL">Portfolio URL</Label>
@@ -168,17 +223,6 @@ const SeekerSignupPage = () => {
             </div>
 
             <div>
-              <Label htmlFor="resume">Upload Resume</Label>
-              <Input
-                type="file"
-                id="resume"
-                name="resume"
-                onChange={handleChange}
-                className="file-input w-full bg-gray-100 border-2 border-gray-300 rounded-md p-2"
-              />
-            </div>
-
-            <div>
               <Label htmlFor="location">Location</Label>
               <Input
                 type="text"
@@ -196,13 +240,43 @@ const SeekerSignupPage = () => {
               <Textarea
                 id="skills"
                 name="skills"
-                placeholder="List your skills separated by commas"
+                placeholder="Enter your skills"
                 value={formData.skills}
                 onChange={handleChange}
                 className="w-full"
               />
             </div>
 
+            <div>
+              <Label htmlFor="education">Education</Label>
+              <Textarea
+                id="education"
+                name="education"
+                placeholder="Enter your education details"
+                value={formData.education}
+                onChange={handleChange}
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="workExperience">Work Experience</Label>
+              <Textarea
+                id="workExperience"
+                name="workExperience"
+                placeholder="Enter your work experience"
+                value={formData.workExperience}
+                onChange={handleChange}
+                className="w-full"
+              />
+            </div>
+            {/* Success or error message */}
+            {errorMessage && (
+              <p className="text-red-500 text-sm text-center mt-4">{errorMessage}</p>
+            )}
+            {successMessage && (
+              <p className="text-green-500 text-sm text-center mt-4">{successMessage}</p>
+            )}
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-blue-400 to-teal-300 text-white hover:from-teal-300 hover:to-blue-400"

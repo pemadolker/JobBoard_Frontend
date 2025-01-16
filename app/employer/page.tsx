@@ -54,7 +54,7 @@ export default function EmployerDashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {[
                 { label: "Active Jobs", count: 50, color: "bg-blue-100 text-blue-700" },
-                { label: "New Applicants", count: 32, color: "bg-green-100 text-green-700" },
+                { label: "New Applicants", count: 32, color: "bg-orange-100 text-orange-700" },
                 { label: "Shortlisted", count: 15, color: "bg-teal-100 text-teal-700" },
               ].map((stat, index) => (
                 <div
@@ -91,10 +91,10 @@ export default function EmployerDashboard() {
                       <td className="px-6 py-4 text-gray-600">{job.company}</td>
                       <td className="px-6 py-4">
                         <div className="flex gap-4">
-                          <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                         <button className="px-4 py-2 bg-teal-500 text-white rounded-lg shadow hover:bg-teal-600 transition">
                             Edit
                           </button>
-                          <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                          <button className="px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition">
                             Delete
                           </button>
                         </div>

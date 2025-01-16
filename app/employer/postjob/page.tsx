@@ -37,16 +37,15 @@ export default function JobPostPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-r from-blue-50 to-blue-100 flex items-center justify-center py-8 px-4">
-      <div className="w-full max-w-3xl sm:max-w-2xl lg:max-w-lg bg-white rounded-lg shadow-lg p-6 sm:p-8 border-t-4 border-blue-400">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-6 sm:mb-8 text-center">
-          Post a Job
-        </h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <main className="min-h-screen bg-gradient-to-r from-blue-50 to-blue-100 flex items-center justify-center py-10 px-4">
+      <div className="w-full max-w-3xl bg-white rounded-xl shadow-lg p-8 border-t-4 border-blue-400">
+        <h1 className="text-3xl font-extrabold text-gray-900 mb-8 text-center">Post a Job</h1>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Job Information */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Job Title */}
             <div>
-              <label className="block text-sm font-medium text-gray-700" htmlFor="title">
+              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="title">
                 Job Title <span className="text-red-500">*</span>
               </label>
               <input
@@ -57,12 +56,12 @@ export default function JobPostPage() {
                 value={formData.title}
                 onChange={handleChange}
                 required
-                className="mt-2 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-300"
+                className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             {/* Job Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700" htmlFor="jobType">
+              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="jobType">
                 Job Type <span className="text-red-500">*</span>
               </label>
               <select
@@ -71,7 +70,7 @@ export default function JobPostPage() {
                 value={formData.jobType}
                 onChange={handleChange}
                 required
-                className="mt-2 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-300"
+                className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">Select Job Type</option>
                 <option value="Full-Time">Full-Time</option>
@@ -82,7 +81,7 @@ export default function JobPostPage() {
             </div>
             {/* Location */}
             <div>
-              <label className="block text-sm font-medium text-gray-700" htmlFor="location">
+              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="location">
                 Location <span className="text-red-500">*</span>
               </label>
               <input
@@ -93,27 +92,27 @@ export default function JobPostPage() {
                 value={formData.location}
                 onChange={handleChange}
                 required
-                className="mt-2 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-300"
+                className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             {/* Salary Range */}
             <div>
-              <label className="block text-sm font-medium text-gray-700" htmlFor="salaryRange">
+              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="salaryRange">
                 Salary Range
               </label>
               <input
                 type="text"
                 id="salaryRange"
                 name="salaryRange"
-                placeholder="e.g., $1,000 - $2,000"
+                placeholder="e.g., Nu.35,000 - Nu.40,000"
                 value={formData.salaryRange}
                 onChange={handleChange}
-                className="mt-2 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-300"
+                className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             {/* Number of Vacancies */}
             <div>
-              <label className="block text-sm font-medium text-gray-700" htmlFor="numberOfVacancies">
+              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="numberOfVacancies">
                 Number of Vacancies
               </label>
               <input
@@ -123,27 +122,27 @@ export default function JobPostPage() {
                 placeholder="e.g., 3"
                 value={formData.numberOfVacancies}
                 onChange={handleChange}
-                className="mt-2 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-300"
+                className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
             {/* Application Deadline */}
             <div>
-              <label className="block text-sm font-medium text-gray-700" htmlFor="applicationDeadline">
+              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="applicationDeadline">
                 Application Deadline
               </label>
               <input
-                type="datetime-local"
+                type="date"
                 id="applicationDeadline"
                 name="applicationDeadline"
                 value={formData.applicationDeadline}
                 onChange={handleChange}
-                className="mt-2 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-300"
+                className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
           {/* Job Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700" htmlFor="description">
+            <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="description">
               Job Description <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -154,12 +153,12 @@ export default function JobPostPage() {
               value={formData.description}
               onChange={handleChange}
               required
-              className="mt-2 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-300"
+              className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             ></textarea>
           </div>
           {/* Benefits */}
           <div>
-            <label className="block text-sm font-medium text-gray-700" htmlFor="benefits">
+            <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="benefits">
               Benefits
             </label>
             <textarea
@@ -169,14 +168,14 @@ export default function JobPostPage() {
               placeholder="List the benefits (e.g., Health Insurance, Paid Leaves)"
               value={formData.benefits}
               onChange={handleChange}
-              className="mt-2 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 transition duration-300"
+              className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             ></textarea>
           </div>
           {/* Submit Button */}
           <div className="text-center">
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-500 to-teal-400 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:from-blue-600 hover:to-teal-500 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-300"
+              className="w-full bg-gradient-to-r from-blue-500 to-teal-400 text-white font-semibold py-3 rounded-lg shadow-md hover:from-blue-600 hover:to-teal-500 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-300"
             >
               Post Job
             </button>
