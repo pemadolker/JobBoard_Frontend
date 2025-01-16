@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter for navigation
 
 const JobsPage = () => {
   interface Job {
@@ -10,9 +11,13 @@ const JobsPage = () => {
   }
 
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+
+  const router = useRouter(); // Initialize useRouter
 
   const dummyJobs: Job[] = [
     { title: "Software Engineer", company: "Tech Bhutan", type: "Full-time" },
@@ -38,12 +43,14 @@ const JobsPage = () => {
         if (response.ok) {
           const data: Job[] = await response.json();
           setJobs(data);
+          setFilteredJobs(data); // Initialize filtered jobs
         } else {
           throw new Error("API not available. Falling back to dummy data.");
         }
       } catch (err: any) {
         console.warn(err.message);
         setJobs(dummyJobs);
+        setFilteredJobs(dummyJobs); // Initialize filtered jobs
       } finally {
         setLoading(false);
       }
@@ -60,9 +67,17 @@ const JobsPage = () => {
     setSelectedJob(null);
   };
 
+  const handleSearchRedirect = () => {
+    if (searchTerm.trim()) {
+      router.push(`/search-results?query=${encodeURIComponent(searchTerm)}`);
+    } else {
+      alert("Please enter a search term.");
+    }
+  };
+
   return (
     <div className="font-sans bg-gray-100 min-h-screen">
-      <header className="bg-gradient-to-r from-blue-600 to-indigo-500 text-white py-6 shadow-lg">
+      <header className="bg-gradient-to-r from-blue-600 to-teal-500 text-white py-6 shadow-lg">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-4xl font-bold">All Job Listings</h1>
           <p className="mt-2 text-lg">Explore all job opportunities posted on our platform.</p>
@@ -70,15 +85,31 @@ const JobsPage = () => {
       </header>
 
       <section className="py-12 max-w-7xl mx-auto">
+        <div className="mb-8 max-w-lg mx-auto flex gap-4">
+          <input
+            type="text"
+            placeholder="Search jobs..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-1 p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            onClick={handleSearchRedirect}
+            className="px-6 py-4 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition"
+          >
+            Search
+          </button>
+        </div>
+
         {loading ? (
           <p className="text-center text-gray-600 text-lg">Loading jobs...</p>
         ) : error ? (
           <p className="text-center text-red-600 text-lg">{error}</p>
-        ) : jobs.length === 0 ? (
-          <p className="text-center text-gray-600 text-lg">No jobs available at the moment.</p>
+        ) : filteredJobs.length === 0 ? (
+          <p className="text-center text-gray-600 text-lg">No jobs available matching your search.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
-            {jobs.map((job, index) => (
+            {filteredJobs.map((job, index) => (
               <div
                 key={index}
                 className="bg-white p-6 rounded-xl shadow-2xl hover:shadow-3xl transition duration-300 cursor-pointer"
