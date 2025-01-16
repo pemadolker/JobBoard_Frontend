@@ -10,47 +10,42 @@ const SignInPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    // Password validation regex
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  
-    if (!passwordRegex.test(password)) {
-      setError(
-        "Password doesnot match"
-      );
-      return;
-    }
-  
     setError(""); // Clear any previous error
     setLoading(true); // Show loading indicator
-  
+
     try {
       const response = await fetch("http://localhost:8000/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-  
+
       const responseData = await response.json();
-  
+
       if (!response.ok) {
-        setError(responseData.error || "Something went wrong. Please try again.");
+        setError(responseData.error || "Invalid email or password. Please try again.");
         return;
       }
-  
-      // If successful, redirect the user
-      router.push("/employer");
+
+      // Redirect based on role
+      if (responseData.role === "employer") {
+        router.push("/employer");
+      } else if (responseData.role === "job_seeker") {
+        router.push("/dashboard/seekerDashboard");
+      } else {
+        setError("Invalid role. Please contact support.");
+      }
     } catch (err) {
       setError("Network error. Please check your connection and try again.");
     } finally {
       setLoading(false); // Hide loading indicator
     }
   };
-  
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-blue-400 to-teal-300">
