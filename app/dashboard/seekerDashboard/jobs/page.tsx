@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter for navigation
+import { useRouter } from "next/navigation";
+import { FaHome, FaCog, FaSearch, FaFileAlt, FaSignOutAlt } from "react-icons/fa";
 
 const JobsPage = () => {
   interface Job {
@@ -76,59 +77,106 @@ const JobsPage = () => {
   };
 
   return (
-    <div className="font-sans bg-gray-100 min-h-screen">
-      <header className="bg-gradient-to-r from-blue-600 to-teal-500 text-white py-6 shadow-lg">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl font-bold">All Job Listings</h1>
-          <p className="mt-2 text-lg">Explore all job opportunities posted on our platform.</p>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Navbar */}
+      <header className="sticky top-0 z-10 flex items-center justify-between bg-gradient-to-r from-blue-600 to-teal-500 text-white shadow-lg px-8 py-4">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 bg-gradient-to-b from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
+            Logo
+          </div>
+          <h1 className="text-2xl font-bold">JobBoard Bhutan</h1>
         </div>
       </header>
 
-      <section className="py-12 max-w-7xl mx-auto">
-        <div className="mb-8 max-w-lg mx-auto flex gap-4">
-          <input
-            type="text"
-            placeholder="Search jobs..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            onClick={handleSearchRedirect}
-            className="px-6 py-4 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition"
-          >
-            Search
-          </button>
-        </div>
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <aside className="group relative w-20 hover:w-64 bg-gradient-to-b from-blue-600 to-teal-500 text-white flex flex-col py-6 shadow-lg transition-all duration-300 ease-in-out">
+          <nav className="flex flex-col space-y-4 px-4">
+            <button
+              className="flex items-center space-x-4 text-white py-2 px-3 rounded-md transition duration-300 hover:bg-blue-600"
+              onClick={() => router.push("/dashboard/seekerDashboard")}
+            >
+              <FaHome size={24} />
+              <span className="whitespace-nowrap group-hover:block hidden">Home</span>
+            </button>
+            <button
+              className="flex items-center space-x-4 text-white py-2 px-3 rounded-md transition duration-300 hover:bg-blue-600"
+              onClick={() => router.push("/settings")}
+            >
+              <FaCog size={24} />
+              <span className="whitespace-nowrap group-hover:block hidden">Settings</span>
+            </button>
+            <button
+              className="flex items-center space-x-4 text-white py-2 px-3 rounded-md transition duration-300 hover:bg-blue-600"
+              onClick={() => router.push("/dashboard/seekerDashboard/search-jobs")}
+            >
+              <FaSearch size={24} />
+              <span className="whitespace-nowrap group-hover:block hidden">Search Jobs</span>
+            </button>
+            <button
+              className="flex items-center space-x-4 text-white py-2 px-3 rounded-md transition duration-300 hover:bg-blue-600"
+              onClick={() => router.push("/dashboard/seekerDashboard/jobs")}
+            >
+              <FaFileAlt size={24} />
+              <span className="whitespace-nowrap group-hover:block hidden">Apply Job</span>
+            </button>
+            <button
+              className="flex items-center space-x-4 text-white py-2 px-3 rounded-md transition duration-300 hover:bg-blue-600 mt-auto"
+              onClick={() => router.push("/")}
+            >
+              <FaSignOutAlt size={24} />
+              <span className="whitespace-nowrap group-hover:block hidden">Logout</span>
+            </button>
+          </nav>
+        </aside>
 
-        {loading ? (
-          <p className="text-center text-gray-600 text-lg">Loading jobs...</p>
-        ) : error ? (
-          <p className="text-center text-red-600 text-lg">{error}</p>
-        ) : filteredJobs.length === 0 ? (
-          <p className="text-center text-gray-600 text-lg">No jobs available matching your search.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
-            {filteredJobs.map((job, index) => (
-              <div
-                key={index}
-                className="bg-white p-6 rounded-xl shadow-2xl hover:shadow-3xl transition duration-300 cursor-pointer"
-                onClick={() => handleJobClick(job)}
-              >
-                <h4 className="text-lg font-bold text-blue-500">{job.title}</h4>
-                <p className="text-gray-600 mt-2">{job.company}</p>
-                <p className="text-gray-500 mt-1 text-sm">{job.type}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
+        {/* Main Content */}
+        <main className="flex-1 p-8 overflow-y-auto">
+          <section className="mb-8 max-w-lg mx-auto flex gap-4">
+            <input
+              type="text"
+              placeholder="Search jobs..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-1 p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={handleSearchRedirect}
+              className="px-6 py-4 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition"
+            >
+              Search
+            </button>
+          </section>
+
+          {loading ? (
+            <p className="text-center text-gray-600 text-lg">Loading jobs...</p>
+          ) : error ? (
+            <p className="text-center text-red-600 text-lg">{error}</p>
+          ) : filteredJobs.length === 0 ? (
+            <p className="text-center text-gray-600 text-lg">No jobs available matching your search.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
+              {filteredJobs.map((job, index) => (
+                <div
+                  key={index}
+                  className="bg-white p-6 rounded-xl shadow-2xl hover:shadow-3xl transition duration-300 cursor-pointer"
+                  onClick={() => handleJobClick(job)}
+                >
+                  <h4 className="text-lg font-bold text-blue-500">{job.title}</h4>
+                  <p className="text-gray-600 mt-2">{job.company}</p>
+                  <p className="text-gray-500 mt-1 text-sm">{job.type}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </main>
+      </div>
 
       {selectedJob && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-12 max-w-4xl w-full relative"> {/* Bigger modal */}
+          <div className="bg-white rounded-lg shadow-lg p-12 max-w-4xl w-full relative">
             <button
-              className="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-3xl" // Larger close button
+              className="absolute top-5 right-5 text-gray-400 hover:text-gray-600 text-3xl"
               onClick={closeModal}
             >
               &times;
