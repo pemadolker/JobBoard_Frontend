@@ -52,6 +52,7 @@ const JobsPage = () => {
         console.warn(err.message);
         setJobs(dummyJobs);
         setFilteredJobs(dummyJobs); // Initialize filtered jobs
+        setError("Failed to load jobs. Showing dummy data.");
       } finally {
         setLoading(false);
       }
@@ -157,7 +158,10 @@ const JobsPage = () => {
           </section>
 
           {loading ? (
-            <p className="text-center text-gray-600 text-lg">Loading jobs...</p>
+            <div className="text-center text-gray-600 text-lg flex justify-center items-center">
+              <div className="spinner-border animate-spin border-4 border-t-4 border-blue-500 rounded-full w-8 h-8"></div>
+              <span> Loading jobs...</span>
+            </div>
           ) : error ? (
             <p className="text-center text-red-600 text-lg">{error}</p>
           ) : filteredJobs.length === 0 ? (
