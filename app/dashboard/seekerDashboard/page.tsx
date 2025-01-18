@@ -17,6 +17,8 @@ const SeekerDashboard = () => {
     title: string;
     company: string;
     type: string;
+    location: string;
+    postedDate: string;
   }
 
   const toggleDropdown = () => {
@@ -33,16 +35,16 @@ const SeekerDashboard = () => {
   };
 
   const dummyJobs: Job[] = [
-    { title: "Software Engineer", company: "Tech Bhutan", type: "Full-time" },
-    { title: "Frontend Developer", company: "Web Solutions", type: "Part-time" },
-    { title: "Backend Developer", company: "DevCorp", type: "Full-time" },
-    { title: "UI/UX Designer", company: "Design Studio", type: "Contract" },
-    { title: "Project Manager", company: "Tech Solutions", type: "Full-time" },
-    { title: "Data Scientist", company: "DataTech", type: "Full-time" },
-    { title: "Mobile App Developer", company: "App Innovations", type: "Contract" },
-    { title: "Digital Marketer", company: "Marketing Masters", type: "Part-time" },
-    { title: "Product Manager", company: "ProductHub", type: "Full-time" },
-    { title: "DevOps Engineer", company: "CloudTech", type: "Full-time" },
+    { title: "Software Engineer", company: "Tech Bhutan", type: "Full-time", location: "Thimphu", postedDate: "2025-01-15" },
+    { title: "Frontend Developer", company: "Web Solutions", type: "Part-time", location: "Paro", postedDate: "2025-01-14" },
+    { title: "Backend Developer", company: "DevCorp", type: "Full-time", location: "Thimphu", postedDate: "2025-01-12" },
+    { title: "UI/UX Designer", company: "Design Studio", type: "Contract", location: "Punakha", postedDate: "2025-01-10" },
+    { title: "Project Manager", company: "Tech Solutions", type: "Full-time", location: "Phuntsholing", postedDate: "2025-01-09" },
+    { title: "Data Scientist", company: "DataTech", type: "Full-time", location: "Thimphu", postedDate: "2025-01-08" },
+    { title: "Mobile App Developer", company: "App Innovations", type: "Contract", location: "Gelephu", postedDate: "2025-01-07" },
+    { title: "Digital Marketer", company: "Marketing Masters", type: "Part-time", location: "Wangdue", postedDate: "2025-01-06" },
+    { title: "Product Manager", company: "ProductHub", type: "Full-time", location: "Thimphu", postedDate: "2025-01-05" },
+    { title: "DevOps Engineer", company: "CloudTech", type: "Full-time", location: "Paro", postedDate: "2025-01-04" },
   ];
 
   const fetchJobs = async () => {
@@ -78,12 +80,13 @@ const SeekerDashboard = () => {
   };
 
   useEffect(() => {
-    fetchJobs();
-  }, []);
+    const debounceTimer = setTimeout(() => handleSearch(), 300);
+    return () => clearTimeout(debounceTimer);
+  }, [searchQuery]);
 
   useEffect(() => {
-    handleSearch();
-  }, [searchQuery]);
+    fetchJobs();
+  }, []);
 
   const closeModal = () => {
     setSelectedJob(null);
@@ -150,12 +153,6 @@ const SeekerDashboard = () => {
               placeholder="Job title, skills, or company"
               className="p-4 w-full md:w-2/3 rounded-lg shadow-lg text-gray-800"
             />
-            <button
-              onClick={handleSearch}
-              className="px-8 py-4 bg-white text-blue-500 rounded-lg shadow-md hover:bg-gray-100 transition duration-200"
-            >
-              Search
-            </button>
           </div>
           {searchQuery.trim() !== "" && (
             <div className="mt-8 text-lg text-white">
@@ -217,6 +214,8 @@ const SeekerDashboard = () => {
                 <h4 className="text-lg font-bold text-blue-500">{job.title}</h4>
                 <p className="text-gray-600 mt-2">{job.company}</p>
                 <p className="text-gray-500 mt-1 text-sm">{job.type}</p>
+                <p className="text-gray-400 mt-1 text-sm">Location: {job.location}</p>
+                <p className="text-gray-400 mt-1 text-sm">Posted: {job.postedDate}</p>
                 <button
                   className={`absolute top-4 right-4 px-2 py-1 text-sm rounded-full ${
                     savedJobs.has(index)
@@ -251,6 +250,12 @@ const SeekerDashboard = () => {
             </p>
             <p className="text-gray-600 mt-6 text-xl">
               <strong>Type:</strong> {selectedJob.type}
+            </p>
+            <p className="text-gray-600 mt-6 text-xl">
+              <strong>Location:</strong> {selectedJob.location}
+            </p>
+            <p className="text-gray-600 mt-6 text-xl">
+              <strong>Posted Date:</strong> {selectedJob.postedDate}
             </p>
             <p className="text-gray-600 mt-8 text-lg leading-relaxed">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae

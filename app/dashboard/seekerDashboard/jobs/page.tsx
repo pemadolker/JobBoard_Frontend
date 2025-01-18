@@ -76,6 +76,14 @@ const JobsPage = () => {
     }
   };
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    const filtered = jobs.filter((job) =>
+      job.title.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setFilteredJobs(filtered);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Navbar */}
@@ -137,7 +145,7 @@ const JobsPage = () => {
               type="text"
               placeholder="Search jobs..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={handleSearchChange} // Updated to use optimized search filtering
               className="flex-1 p-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
