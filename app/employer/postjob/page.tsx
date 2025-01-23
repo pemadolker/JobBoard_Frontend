@@ -21,19 +21,44 @@ export default function JobPostPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", formData);
 
-    setFormData({
-      title: "",
-      description: "",
-      jobType: "",
-      location: "",
-      salaryRange: "",
-      benefits: "",
-      applicationDeadline: "",
-      numberOfVacancies: 1,
-      status: "",
-    });
+    try {
+      const response = await fetch("http://localhost:8000/employer/jobs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          em_id: "example_employer_id", // Replace this with actual employer ID
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to post the job");
+      }
+
+      const data = await response.json();
+      alert(data.message);
+
+      setFormData({
+        title: "",
+        description: "",
+        jobType: "",
+        location: "",
+        salaryRange: "",
+        benefits: "",
+        applicationDeadline: "",
+        numberOfVacancies: 1,
+        status: "",
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("An unknown error occurred");
+      }
+    }
   };
 
   return (
