@@ -14,8 +14,8 @@ const Sidebar = () => {
 
   const navItems = [
     { href: "/", icon: <HomeIcon />, label: "Home" },
-    { href: "/view-applicants", icon: <UserIcon />, label: "View Applicants" },
-    { href: "employer/postjob", icon: <BriefcaseIcon />, label: "Post a Job" },
+    { href: "/employer/viewapplicants", icon: <UserIcon />, label: "View Applicants" },
+    { href: "/employer/postjob", icon: <BriefcaseIcon />, label: "Post a Job" },
     { href: "/search-job", icon: <SearchIcon />, label: "Search Job" },
     { href: "/account-settings", icon: <CogIcon />, label: "Account Settings" },
   ];
