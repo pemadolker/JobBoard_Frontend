@@ -5,6 +5,7 @@ import { Table } from '@/components/ui/table';
 import { cn } from '@/lib/utils'; // Utility function for conditional classNames
 
 export default function EmployerDashboard() {
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Navigation Bar */}

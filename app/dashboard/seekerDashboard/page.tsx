@@ -13,6 +13,7 @@ const SeekerDashboard = () => {
   const [savedJobs, setSavedJobs] = useState<Set<number>>(new Set()); // Track saved jobs
   const router = useRouter();
 
+
   interface Job {
     title: string;
     company: string;

@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { FiArrowLeft } from "react-icons/fi";
+import { FiArrowLeft, FiEye, FiEyeOff } from "react-icons/fi";
 
 const EmployerSignupPage = () => {
   const [formData, setFormData] = useState({
@@ -26,7 +26,10 @@ const EmployerSignupPage = () => {
     description: "",
     location: "",
   });
+  const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -34,22 +37,25 @@ const EmployerSignupPage = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  const validatePassword = (password: string) => {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/;
+    return passwordRegex.test(password);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-    if (!passwordRegex.test(formData.password)) {
-      setSuccessMessage("");
+    if (!validatePassword(formData.password)) {
+      setErrorMessage("Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one digit.");
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setSuccessMessage("");
+      setErrorMessage("Passwords do not match.");
       return;
     }
 
-    setSuccessMessage("");  // Reset success message before trying to send request
+    setErrorMessage(""); // Clear any existing errors
 
     try {
       const response = await fetch("http://localhost:8000/signup", {
@@ -69,23 +75,14 @@ const EmployerSignupPage = () => {
         }),
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json();
         setSuccessMessage("Something went wrong. Please try again later.");
         return;
       }
 
       setSuccessMessage("Signup successful! A confirmation email has been sent. Please confirm your email to complete the process.");
-      setFormData({
-        companyName: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        website: "",
-        contactNumber: "",
-        description: "",
-        location: "",
-      });
     } catch (err) {
       console.error("Error during signup:", err);
       setSuccessMessage("Something went wrong. Please try again later.");
@@ -94,6 +91,14 @@ const EmployerSignupPage = () => {
 
   const handleGoBack = () => {
     router.push("/signup");
+  };
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setConfirmPasswordVisible(!confirmPasswordVisible);
   };
 
   return (
@@ -145,28 +150,46 @@ const EmployerSignupPage = () => {
 
             <div>
               <Label htmlFor="password">Password</Label>
-              <Input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Create a password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full"
-              />
+              <div className="relative">
+                <Input
+                  type={passwordVisible ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  placeholder="Password (8+ characters, 1 uppercase, 1 number)"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full"
+                />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                >
+                  {passwordVisible ? <FiEyeOff /> : <FiEye />}
+                </button>
+              </div>
             </div>
 
             <div>
               <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                placeholder="Confirm your password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="w-full"
-              />
+              <div className="relative">
+                <Input
+                  type={confirmPasswordVisible ? "text" : "password"}
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  placeholder="Confirm your password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={toggleConfirmPasswordVisibility}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                >
+                  {confirmPasswordVisible ? <FiEyeOff /> : <FiEye />}
+                </button>
+              </div>
             </div>
 
             <div>
@@ -220,7 +243,9 @@ const EmployerSignupPage = () => {
               />
             </div>
 
-            {successMessage && <p className="text-green-500 text-sm text-center">{successMessage}</p>}
+            {/* Error or Success message */}
+            {errorMessage && <p className="text-red-500 text-sm text-center mt-4">{errorMessage}</p>}
+            {successMessage && <p className="text-green-500 text-sm text-center mt-4">{successMessage}</p>}
 
             <Button
               type="submit"

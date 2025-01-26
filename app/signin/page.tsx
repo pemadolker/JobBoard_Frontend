@@ -32,6 +32,13 @@ const SignInPage = () => {
         return;
       }
 
+      // Store JWT token in localStorage
+      if (responseData.token) {
+        localStorage.setItem("token", responseData.token); // Save token in localStorage
+        console.log("Token stored:", responseData.token); // Log the token to the console
+      }
+      
+
       // Redirect based on role
       if (responseData.role === "employer") {
         router.push("/employer");
