@@ -1,8 +1,34 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Sidebar from "../../components/Sidebar";
 
 export default function EmployerDashboard() {
+  const [token, setToken] = useState<string | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Retrieve the token from localStorage
+    const storedToken = localStorage.getItem("token");
+
+    if (!storedToken) {
+      // If no token, redirect to the sign-in page
+      router.push("/signin");
+    } else {
+      setToken(storedToken);
+    }
+  }, [router]);
+
+  if (!token) {
+    // Show a loading state while checking the token
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
       {/* Sticky Header */}
@@ -91,7 +117,7 @@ export default function EmployerDashboard() {
                       <td className="px-6 py-4 text-gray-600">{job.company}</td>
                       <td className="px-6 py-4">
                         <div className="flex gap-4">
-                         <button className="px-4 py-2 bg-teal-500 text-white rounded-lg shadow hover:bg-teal-600 transition">
+                          <button className="px-4 py-2 bg-teal-500 text-white rounded-lg shadow hover:bg-teal-600 transition">
                             Edit
                           </button>
                           <button className="px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition">
