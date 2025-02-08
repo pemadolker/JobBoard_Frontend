@@ -1,5 +1,20 @@
 "use client";
 import React, { useState } from "react";
+import CryptoJS from "crypto-js";
+import axios from "axios";
+
+const secretKey = "de8f79609b55a5ad025d18de81b813cedd7396456df5c0ea6b6c9dc15fcd6931"; // Must match the encryption key used in the backend
+
+// Function to decrypt the token
+function decryptToken(encryptedToken: string): string | null {
+  try {
+    const bytes = CryptoJS.AES.decrypt(encryptedToken, secretKey);
+    return bytes.toString(CryptoJS.enc.Utf8);
+  } catch (error) {
+    console.error("Error decrypting token:", error);
+    return null;
+  }
+}
 
 export default function JobPostPage() {
   const [formData, setFormData] = useState({
@@ -22,15 +37,36 @@ export default function JobPostPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Retrieve and decrypt the token
+    const encryptedToken = localStorage.getItem("authToken");
+    const token = encryptedToken ? decryptToken(encryptedToken) : null;
+
+    if (!token) {
+      alert("Authentication error: Unable to retrieve token");
+      return;
+    }
+
+    // Format application deadline to YYYY-MM-DD
+    const formattedDeadline = formData.applicationDeadline
+      ? formData.applicationDeadline.split("-").reverse().join("-") // Convert DD-MM-YYYY to YYYY-MM-DD
+      : null;
+
     try {
+      // Optionally use axios for profile check
+      await axios.get("http://localhost:8000/profile", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       const response = await fetch("http://localhost:8000/employer/jobs", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // Send decrypted token
         },
         body: JSON.stringify({
           ...formData,
-          em_id: "example_employer_id", // Replace this with actual employer ID
+          applicationDeadline: formattedDeadline,
+          em_id: "example_employer_id", // Replace with actual employer ID
         }),
       });
 
@@ -41,6 +77,7 @@ export default function JobPostPage() {
       const data = await response.json();
       alert(data.message);
 
+      // Reset the form
       setFormData({
         title: "",
         description: "",
@@ -84,76 +121,44 @@ export default function JobPostPage() {
                 className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-            {/* Job Type */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="jobType">
-                Job Type <span className="text-red-500">*</span>
-              </label>
-              <select
-                id="jobType"
-                name="jobType"
-                value={formData.jobType}
-                onChange={handleChange}
-                required
-                className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Select Job Type</option>
-                <option value="Full-Time">Full-Time</option>
-                <option value="Part-Time">Part-Time</option>
-                <option value="Contract">Contract</option>
-                <option value="Internship">Internship</option>
-              </select>
-            </div>
-            {/* Location */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="location">
-                Location <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                id="location"
-                name="location"
-                placeholder="e.g., Thimphu, Bhutan"
-                value={formData.location}
-                onChange={handleChange}
-                required
-                className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+
             {/* Salary Range */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="salaryRange">
-                Salary Range
+                Salary Range <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 id="salaryRange"
                 name="salaryRange"
-                placeholder="e.g., Nu.35,000 - Nu.40,000"
+                placeholder="e.g., $50,000 - $70,000"
                 value={formData.salaryRange}
                 onChange={handleChange}
+                required
                 className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-            {/* Number of Vacancies */}
+
+            {/* Benefits */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="numberOfVacancies">
-                Number of Vacancies
+              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="benefits">
+                Benefits
               </label>
               <input
-                type="number"
-                id="numberOfVacancies"
-                name="numberOfVacancies"
-                placeholder="e.g., 3"
-                value={formData.numberOfVacancies}
+                type="text"
+                id="benefits"
+                name="benefits"
+                placeholder="e.g., Health insurance, 401(k)"
+                value={formData.benefits}
                 onChange={handleChange}
                 className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
+
             {/* Application Deadline */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="applicationDeadline">
-                Application Deadline
+                Application Deadline <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
@@ -161,10 +166,85 @@ export default function JobPostPage() {
                 name="applicationDeadline"
                 value={formData.applicationDeadline}
                 onChange={handleChange}
+                required
                 className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
+
+            {/* Number of Vacancies */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="numberOfVacancies">
+                Number of Vacancies <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                id="numberOfVacancies"
+                name="numberOfVacancies"
+                value={formData.numberOfVacancies}
+                onChange={handleChange}
+                required
+                className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            {/* Status */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="status">
+                Status <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="status"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                required
+                className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">Select Status</option>
+                <option value="Open">Open</option>
+                <option value="Closed">Closed</option>
+              </select>
+            </div>
           </div>
+
+          {/* Job Type */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="jobType">
+              Job Type <span className="text-red-500">*</span>
+            </label>
+            <select
+              id="jobType"
+              name="jobType"
+              value={formData.jobType}
+              onChange={handleChange}
+              required
+              className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Select Job Type</option>
+              <option value="Full-Time">Full-Time</option>
+              <option value="Part-Time">Part-Time</option>
+              <option value="Contract">Contract</option>
+              <option value="Internship">Internship</option>
+            </select>
+          </div>
+
+          {/* Location */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="location">
+              Location <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              placeholder="e.g., Thimphu, Bhutan"
+              value={formData.location}
+              onChange={handleChange}
+              required
+              className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
           {/* Job Description */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="description">
@@ -181,21 +261,7 @@ export default function JobPostPage() {
               className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             ></textarea>
           </div>
-          {/* Benefits */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2" htmlFor="benefits">
-              Benefits
-            </label>
-            <textarea
-              id="benefits"
-              name="benefits"
-              rows={3}
-              placeholder="List the benefits (e.g., Health Insurance, Paid Leaves)"
-              value={formData.benefits}
-              onChange={handleChange}
-              className="block w-full p-3 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            ></textarea>
-          </div>
+
           {/* Submit Button */}
           <div className="text-center">
             <button
